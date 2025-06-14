@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SPDX-License-Identifier: CC0-1.0
+  SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+ -->
+<component type="desktop-application">
+  <id>io.github.thebill2001.mea-save-editor</id>
+  <name>Mass Effect: Andromeda Save Editor</name>
+  <summary>Mass Effect: Andromeda Save Editor</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <developer id="thebill2001.github.io">
+    <name>Trần Nam Tuấn</name>
+    <url>https://github.com/TheBill2001</url>
+  </developer>
+  <url type="homepage">https://github.com/TheBill2001/mea-save-editor</url>
+  <url type="bugtracker">https://github.com/TheBill2001/mea-save-editor/issues</url>
+  <description>
+    Save editor for Mass Effect: Andromeda.
+  </description>
+</component>

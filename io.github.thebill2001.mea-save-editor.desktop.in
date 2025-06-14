@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: CC0-1.0
+# SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+[Desktop Entry]
+Name=Mass Effect: Andromeda Save Editor
+Comment=Mass Effect: Andromeda Save Editor
+Version=@PROJECT_VERSION@
+Exec=mea-save-editor
+Icon=applications-development
+Type=Application
+Terminal=false
+Categories=Qt;KDE;Game;Utility
