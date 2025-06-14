@@ -1,0 +1,80 @@
+name: Build Windows
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: 3.12
+  KF_VERSION: 6.14.0
+  BLUEPRINT_REPO_URL: https://github.com/TheBill2001/craft-blueprints-thebill2001.git
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-2025
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+      - name: Setup Python
+        id: python-setup
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Restore Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            cache
+            CraftRoot
+          key: windows-${{ env.KF_VERSION }}
+      - name: Setup Craft
+        run: |
+          $env:CRAFT_ROOT = "$env:GITHUB_WORKSPACE\CraftRoot"
+          "CRAFT_ROOT=$env:CRAFT_ROOT" >> $env:GITHUB_ENV
+
+          New-Item -ItemType Directory -Force -Path "$env:CRAFT_ROOT"
+          git clone "https://invent.kde.org/kde/craft.git" "$env:CRAFT_ROOT\craft"
+
+          $craftSettings = Get-Content -Path "$env:GITHUB_WORKSPACE\.github\workflows\CraftSettings.ini" -Raw
+          $craftSettings = $craftSettings -replace "@@ABI@@", "windows-cl-msvc2022-x86_64"
+          $craftSettings = $craftSettings -replace "@@CACHE_ROOT@@", "$env:CRAFT_ROOT"
+          $craftSettings = $craftSettings -replace "@@CACHE_DIR@@", "$env:GITHUB_WORKSPACE\cache"
+          $craftSettings = $craftSettings -replace "@@PYTHON_DIR@@", "$env:pythonLocation"
+          $craftSettings = $craftSettings -replace "@@MSYS_DIR@@", "C:\msys64"
+
+          $blueprintSettings = Get-Content -Path "$env:GITHUB_WORKSPACE\.github\workflows\BlueprintSettings.ini" -Raw
+          $blueprintSettings = $blueprintSettings -replace "@@KF_VERSION@@", "$env:KF_VERSION"
+          $blueprintSettings = $blueprintSettings -replace "@@Target@@", "master"
+
+          New-Item -ItemType Directory -Force -Path "$env:CRAFT_ROOT\etc"
+          Set-Content -Path "$env:CRAFT_ROOT\etc\CraftSettings.ini" -Value "$craftSettings"
+          Set-Content -Path "$env:CRAFT_ROOT\etc\BlueprintSettings.ini" -Value "$blueprintSettings"
+
+          $env:CRAFT = "$env:CRAFT_ROOT\craft\bin\craft.py"
+          $env:PYTHON = "${{ steps.python-setup.outputs.python-path }}"
+          "CRAFT=$env:CRAFT" >> $env:GITHUB_ENV
+          "PYTHON=$env:PYTHON" >> $env:GITHUB_ENV
+
+          & "$env:PYTHON" "$env:CRAFT" craft
+          & "$env:PYTHON" "$env:CRAFT" nsis dev-utils/cmake kde/frameworks/extra-cmake-modules libs/qt6/qtbase
+      - name: Save Cache
+        id: cache-primes-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            cache
+            CraftRoot
+          key: windows-${{ env.KF_VERSION }}
+      - name: Build and Package
+        run: |
+          & "$env:PYTHON" "$env:CRAFT" --add-blueprint-repository "$env:BLUEPRINT_REPO_URL"
+          & "$env:PYTHON" "$env:CRAFT" thebill2001/mea-save-editor
+          & "$env:PYTHON" "$env:CRAFT" --package thebill2001/mea-save-editor
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: ${{ env.CRAFT_ROOT }}/out
