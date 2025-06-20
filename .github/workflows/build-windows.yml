@@ -25,7 +25,8 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
       - name: Restore Cache
-        uses: actions/cache@v4
+        id: restore-cache
+        uses: actions/cache/restore@v4
         with:
           path: |
             cache
@@ -60,7 +61,7 @@ jobs:
           "PYTHON=$env:PYTHON" >> $env:GITHUB_ENV
 
           & "$env:PYTHON" "$env:CRAFT" craft
-          & "$env:PYTHON" "$env:CRAFT" nsis dev-utils/cmake kde/frameworks/extra-cmake-modules libs/qt6/qtbase
+          & "$env:PYTHON" "$env:CRAFT" nsis kde/frameworks/tier1/kcoreaddons kde/frameworks/tier1/kirigami kde/frameworks/tier1/kconfig kde/frameworks/tier3/kiconthemes kde/frameworks/tier1/ki18n kde/frameworks/tier3/qqc2-desktop-style kde/unreleased/kirigami-addons kde/frameworks/tier1/kitemmodels
       - name: Save Cache
         id: cache-primes-save
         uses: actions/cache/save@v4
@@ -68,7 +69,7 @@ jobs:
           path: |
             cache
             CraftRoot
-          key: windows-${{ env.KF_VERSION }}
+          key: ${{ steps.restore-cache.outputs.cache-primary-key }}
       - name: Build and Package
         run: |
           & "$env:PYTHON" "$env:CRAFT" --add-blueprint-repository "$env:BLUEPRINT_REPO_URL"
