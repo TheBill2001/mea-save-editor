@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+    http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
+<!--
+SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+SPDX-License-Identifier: GPL-3.0-only
+-->
+    <include>QStandardPaths</include>
+    <include>QFileInfo</include>
+    <group name="History">
+        <entry name="LastOpenDir" type="Path">
+            <default code="true">
+                []() {
+                    const auto documentDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+                    QFileInfo saveDir(documentDir + QStringLiteral("/BioWare/Mass Effect Andromeda/Save"));
+                    saveDir.refresh();
+                    if (saveDir.isDir() &amp;&amp; saveDir.isReadable()) {
+                        return saveDir.filePath();
+                    }
+                    return documentDir;
+                } ()
+            </default>
+        </entry>
+    </group>
+</kcfg>

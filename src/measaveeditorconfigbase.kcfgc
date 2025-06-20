@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2025 Trần Nam Tuấn <tuantran1632001@gmail.com>
+# SPDX-License-Identifier: GPL-3.0-only
+
+File=measaveeditorconfigbase.kcfg
+HeaderExtension=hpp
+ClassName=MEASaveEditorConfigBase
+Mutators=true
+DefaultValueGetters=true
+GenerateProperties=true
+ParentInConstructor=true
+QmlUncreatable=true
+QmlRegistration=true
